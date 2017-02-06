@@ -16,8 +16,9 @@ categories: Markdown
 ## 二级标题
 ### 三级标题
 
-# 常用
+
 ***
+# 常用
 ## 无序列表
 ```
 * a
@@ -72,5 +73,5 @@ categories: Markdown
 [google](https://www.google.com)
 
 ```bash
-echo "aa"
+echo "hexo highlight"
 ```
