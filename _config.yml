@@ -9,6 +9,7 @@ description:
 author: Terry Shi
 language: zh-Hans
 timezone:
+avatar:  #头像
 
 menu:
   home: /
@@ -17,7 +18,7 @@ menu:
   archives: /archives
   tags: /tags
   #sitemap: /sitemap.xml
-  #commonweal: /404.html
+  commonweal: /404.html
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -96,6 +97,6 @@ search:
 
 #打赏
 # Donate 文章末尾显示打赏按钮
-reward_comment: 这里写上你的jargon (Just whatever)
-wechatpay: 此处为微信向我付款二维码图片的相对或者是绝对URL
-alipay: 此处为支付宝向我付款二维码图片的相对或者是绝对URL
+reward_comment:  #这里写上你的jargon (Just whatever)
+wechatpay: /img/reward/wx_pay.png #此处为微信向我付款二维码图片的相对或者是绝对URL
+alipay: #此处为支付宝向我付款二维码图片的相对或者是绝对URL

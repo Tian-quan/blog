@@ -15,5 +15,3 @@ $ hexo hexo g
 //日常调试
 hexo clean && hexo g && hexo s -p 8000
 ```
-
-
