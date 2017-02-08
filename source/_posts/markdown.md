@@ -72,6 +72,14 @@ categories: Markdown
 `[google](https://www.google.com)`
 [google](https://www.google.com)
 
+***
+## 语法高亮
 ```bash
 echo "hexo highlight"
+```
+
+```java
+class Hello implements java.io.Serializable{
+    private final String world = "World!";
+}
 ```

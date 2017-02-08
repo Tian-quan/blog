@@ -9,7 +9,7 @@ description:
 author: Terry Shi
 language: zh-Hans
 timezone:
-avatar:  #头像
+avatar:  /img/me/onepiece.jpg #头像
 
 menu:
   home: /
@@ -67,6 +67,7 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
+#分页
 per_page: 5
 pagination_dir: page
 

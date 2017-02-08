@@ -11,10 +11,19 @@ categories: 开发环境
  * IDEA - Java开发利器
 
 # 压缩
- * 7zip - 开源精简
+ * 7-zip - 开源精简
 
 # 文档
  * Atom
+    ```
+    推荐插件:
+      (autocomplete-json),
+      (format-sql,"SQL格式化"),
+      (highlight-selected,"高亮当前选中字符"),
+      (minimap,"代码小视图"),
+      (pretty-json,"JSON格式化"),
+      (split-diff,"代码对比")
+    ```
  * Notepad++
 
 # 剪切板
