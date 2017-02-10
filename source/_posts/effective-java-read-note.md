@@ -120,3 +120,42 @@ public class MyObject {
     }
 }
 ```
+***
+## 第11条 谨慎使用clone
+### 深拷贝简单例子
+```java
+ublic class CloneObject implements Cloneable{
+    Object[] elememts = new Integer[]{1,23,4};
+    Integer anInt = 1;
+    List<String> list = new LinkedList<>(Arrays.asList("1","2"));
+
+    @Override
+    public CloneObject clone() {
+        try {
+            CloneObject clone = (CloneObject) super.clone();
+            clone.anInt = new Integer(this.anInt); //深拷贝
+            clone.elememts = this.elememts.clone();
+            clone.list =(List<String>) ((LinkedList<String>)list).clone(); //浅拷贝
+            for (int i=0; list != null && i<list.size() ; ++i){
+                clone.list.set(i, new String(list.get(i))); //new String对String对象深拷贝.
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void main(String[] args)
+    {
+        CloneObject a = new CloneObject();
+        CloneObject b = a.clone();
+
+        System.out.println(a==b);                           //false
+        System.out.println(a.anInt == b.anInt);             //false
+        System.out.println(a.elememts == b.elememts);       //false
+        System.out.println(a.list == b.list);               //false
+        System.out.println(a.list.get(0) == b.list.get(0)); //false
+    }
+}
+```
