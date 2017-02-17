@@ -87,6 +87,13 @@ from dual;
 SELECT TO_DATE('2016-12-06 20:15:30','yyyy-mm-dd hh24:mi:ss'),TO_DATE('20161206','yyyy-mm-dd'),cast('11:15:30'as time)
 from dual
 ;
+--3.日期转字符串, 获取年月日,季度.
+SELECT to_char(sysdate,'yyyy-mm') from dual;
+SELECT to_char(sysdate,'q') from dual;
+SELECT extract(YEAR from sysdate),sysdate from dual;--取出时间中的Year
+SELECT extract(MONTH from sysdate),sysdate from dual;--取出时间中的Month
+SELECT extract(DAY from sysdate),sysdate from dual;--取出时间中的Day
+--4.日期增加
 select sysdate,add_months(sysdate,12) from dual;        --加1年
 select sysdate,add_months(sysdate,1) from dual;        --加1月
 select sysdate,to_char(sysdate+7,'yyyy-mm-dd HH24:MI:SS') from dual;   --加1星期
@@ -94,11 +101,10 @@ select sysdate,to_char(sysdate+1,'yyyy-mm-dd HH24:MI:SS') from dual;   --加1天
 select sysdate,to_char(sysdate+1/24,'yyyy-mm-dd HH24:MI:SS') from dual;  --加1小时
 select sysdate,to_char(sysdate+1/24/60,'yyyy-mm-dd HH24:MI:SS') from dual;  --加1分钟
 select sysdate,to_char(sysdate+1/24/60/60,'yyyy-mm-dd HH24:MI:SS') from dual;  --加1秒
---
-select months_between(to_date('2005.04.20','yyyy.mm.dd'),to_date('2005.05.20','yyyy.mm.dd')) mon_betw from dual; --时间间隔(月)
-select ceil(((To_date('2008-05-02 00:00' , 'yyyy-mm-dd hh24:mi') - To_date('2008-05-01 23:59' , 'yyyy-mm-dd hh24:mi'))) * 24 * 60) FROM DUAL;
+--5.日期间隔
+select months_between(to_date('2006-04-20','yyyy-mm-dd'),to_date('2005-05-20','yyyy-mm-dd')) mon_betw from dual; --时间间隔(月)
+select ceil(((to_date('2008-05-02 00:00' , 'yyyy-mm-dd hh24:mi:ss') - to_date('2008-05-01 22:58' , 'yyyy-mm-dd hh24:mi:ss'))) * 24 * 60) FROM DUAL; --间隔分钟
 
-SELECT extract(MONTH from sysdate),sysdate from dual;--取出时间中的Year
 ```
 
 ### CAST转换操作
@@ -138,6 +144,45 @@ SELECT sysdate from dual where EXISTS(select 1 from dual where 1=1);
 SELECT sysdate from dual where EXISTS(select 1 from dual where 1<>1);
 ```
 
+### trunc、round、ceil/floor
+```SQL
+--1.trunc函数
+--trunc函数处理数字 TRUNC(number[,decimals])
+select trunc(123.89,0) from dual; -- 123
+select trunc(123.123,2) from dual; --123.12
+select trunc(123.123,-1) from dual; --120
+--trunc函数处理日期 TRUNC(date,[fmt]), sysdate为2017-02-15 10:30:09
+SELECT trunc(sysdate,'yyyy'),sysdate from dual;  --返回当年第一天. 2017-01-01 00:00:00
+SELECT trunc(sysdate,'mm'),sysdate from dual; --返回当月第一天. 2017-02-01 00:00:00
+SELECT trunc(sysdate,'d'),sysdate from dual; --返回当前星期的第一天. 2017-02-12 00:00:00
+
+--2.round 函数
+--round函数处理数字 round( number, [ decimal_places ] ), decimal_places为保留的小数位数
+--传回一个数值，该数值是按照指定的小数位元数进行四舍五入运算的结果。
+select round(123.456, 0) from dual;     --回传 123
+select round(123.456, 1) from dual;     --回传 123.5
+select round(-123.456, 2) from dual;    --回传 -123.46
+--round函数处理日期 round(date,fmt) ,fmt为四舍五入的单位.
+--月
+select round(to_date('20170215','yyyymmdd'),'mm') from dual;    -- 2017-02-01
+select round(to_date('20170216','yyyymmdd'),'mm') from dual;    -- 2017-03-01
+--日
+select round(to_date('20170215 11:20','yyyymmdd hh24:mi'),'dd') from dual;    -- 2017-02-15 00:00:00
+select round(to_date('20170215 12:20','yyyymmdd hh24:mi'),'dd') from dual;    -- 2017-02-16 00:00:00
+--小时
+select round(to_date('20170215 11:20','yyyymmdd hh24:mi'),'hh') from dual;    -- 2017-02-15 11:00:00
+select round(to_date('20170215 11:30','yyyymmdd hh24:mi'),'hh') from dual;    -- 2017-02-15 12:00:00
+
+--3.ceil/floor 函数
+--处理数字
+select ceil(123.456) from dual;     --回传 124
+select floor(123.456) from dual;     --回传 123
+--处理日期
+select ceil(to_date('20170215 11:00','yyyymmdd hh24:mi') - to_date('20170214 11:00','yyyymmdd hh24:mi')) from dual; -- return 1
+select ceil(to_date('20170215 11:00','yyyymmdd hh24:mi') - to_date('20170214 10:59','yyyymmdd hh24:mi')) from dual; -- return 2
+select floor(to_date('20170215 11:00','yyyymmdd hh24:mi') - to_date('20170214 10:59','yyyymmdd hh24:mi')) from dual; -- return 1
+```
+
 ### 常用函数
 ```SQL
 --1.NVL NVL2 NULLIF
@@ -151,4 +196,9 @@ SELECT NULLIF('a','a'),NULLIF('a','b'),NULLIF('b','a') from dual;
 --2. (+)的使用,哪边有（+）哪边就允许为空
 SELECT a.*, b.* from a,b where a.ID(+) = b.ID ; --就是一个右连接，等同于select a.*, b.* from a right join b on a.ID=b.ID
 SELECT a.*, b.* from a,b where a.ID = b.ID (+);  --就是一个左连接，等同于select a.*, b.* from a left join b on a.ID=b.ID
+
+--3. decode
+SELECT decode('a','a',96,'b',97) from dual; -- 96
+SELECT decode('b','a',96,'b',97) from dual; -- 97
+
 ```
