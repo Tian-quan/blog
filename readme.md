@@ -9,7 +9,7 @@ $ hexo d
 
 //编译
 $ hexo clean
-$ hexo hexo g
+$ hexo g
 ```
 ```
 //日常调试
