@@ -155,6 +155,10 @@ select trunc(123.123,-1) from dual; --120
 SELECT trunc(sysdate,'yyyy'),sysdate from dual;  --返回当年第一天. 2017-01-01 00:00:00
 SELECT trunc(sysdate,'mm'),sysdate from dual; --返回当月第一天. 2017-02-01 00:00:00
 SELECT trunc(sysdate,'d'),sysdate from dual; --返回当前星期的第一天. 2017-02-12 00:00:00
+SELECT trunc(sysdate,'dd') from dual;  --截取到当天0点0分0秒,2018-08-25 00:00:00
+SELECT trunc(sysdate,'hh24') from dual;  --截取到小时（当前小时，零分零秒）,2018-08-25 04:00:00
+SELECT trunc(sysdate,'mi') from dual; --截取到分（当前分，零秒）2018-08-25 04:28:00
+SELECT trunc(sysdate,'ss') from dual ;--报错，没有精确到秒的格式
 
 --2.round 函数
 --round函数处理数字 round( number, [ decimal_places ] ), decimal_places为保留的小数位数
