@@ -33,6 +33,7 @@ categories: 开发环境
  * Total Commander - 学习成本较大
  * Clover - 简单易用
  * EveryThing - 高效,支持正则,模糊搜索.
+ * Listary - 不仅支持文件搜索,而且支持启动应用
 
 # To-do
  * Wunderlist - 多终端同步
@@ -43,3 +44,7 @@ categories: 开发环境
 
 # 梯子
  * Lantern
+
+# 思维导图
+ * 百度脑图
+ * XMind
