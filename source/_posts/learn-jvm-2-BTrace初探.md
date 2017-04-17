@@ -74,7 +74,7 @@ public static void testDuration(@ProbeClassName String pcn,@ProbeMethodName Stri
 ```
 
 ## 结果
-![Duration](/img/learn-jvn-2/Duration.png)
+![Duration](/img/learn-jvm-2/Duration.png)
 
 ***
 # 谁调用了这个函数
@@ -100,5 +100,5 @@ public class TracingScript {
 ```
 
 ## 结果
-![invoke stack](/img/learn-jvn-2/invoke-stack.png)
+![invoke stack](/img/learn-jvm-2/invoke-stack.png)
 

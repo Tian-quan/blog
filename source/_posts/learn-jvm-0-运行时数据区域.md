@@ -8,6 +8,7 @@ categories: Java
 ![Hotspot](/img/learn-jvm-0/Hotspot_Architecture.png)
 
 # 共享数据区域
+![share](/img/learn-jvm-0/share.png)
 
 ## _Method Area_
 方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的应该是与Java堆区分开来.
@@ -23,6 +24,8 @@ Java堆是**垃圾收集器管理**的主要区域，因此很多时候也被称
 
 ---
 # 线程私有数据区域
+![private](/img/learn-jvm-0/private.png)
+
 ## _PC_
 程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。
 在虚拟机的概念模型里（仅是概念模型，各种虚拟机可能会通过一些更高效的方式去实现），字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。
