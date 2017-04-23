@@ -1,0 +1,822 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="SQL,ORACLE," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="正则表达式123456789101112131415--1,REGEXP_LIKE--默认是大小写敏感的--REGEXP_LIKE(ACCT_TYPE,&apos;E&apos;,&apos;i&apos;)是大小写不敏感SELECT ACCT_NBR from CCS_ACCTwhere REGEXP_LIKE(ACCT_NBR,&apos;1$&apos;);--2,REGEXP_INSTR--查找第一次出现匹配模式是indexSELECT REGEX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL基础-ORACLE">
+<meta property="og:url" content="http://yoursite.com/2017/02/08/learn-oracle/index.html">
+<meta property="og:site_name" content="Terry">
+<meta property="og:description" content="正则表达式123456789101112131415--1,REGEXP_LIKE--默认是大小写敏感的--REGEXP_LIKE(ACCT_TYPE,&apos;E&apos;,&apos;i&apos;)是大小写不敏感SELECT ACCT_NBR from CCS_ACCTwhere REGEXP_LIKE(ACCT_NBR,&apos;1$&apos;);--2,REGEXP_INSTR--查找第一次出现匹配模式是indexSELECT REGEX">
+<meta property="og:updated_time" content="2017-04-23T09:54:13.174Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SQL基础-ORACLE">
+<meta name="twitter:description" content="正则表达式123456789101112131415--1,REGEXP_LIKE--默认是大小写敏感的--REGEXP_LIKE(ACCT_TYPE,&apos;E&apos;,&apos;i&apos;)是大小写不敏感SELECT ACCT_NBR from CCS_ACCTwhere REGEXP_LIKE(ACCT_NBR,&apos;1$&apos;);--2,REGEXP_INSTR--查找第一次出现匹配模式是indexSELECT REGEX">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/08/learn-oracle/"/>
+
+
+
+
+
+  <title>SQL基础-ORACLE | Terry</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Terry</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/08/learn-oracle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Terry Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/me/onepiece.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Terry">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                SQL基础-ORACLE
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-08T16:50:35+08:00">
+                2017-02-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SQL/" itemprop="url" rel="index">
+                    <span itemprop="name">SQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/08/learn-oracle/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/08/learn-oracle/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1,REGEXP_LIKE</span></div><div class="line"><span class="comment">--默认是大小写敏感的</span></div><div class="line"><span class="comment">--REGEXP_LIKE(ACCT_TYPE,'E','i')是大小写不敏感</span></div><div class="line"><span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT</div><div class="line"><span class="keyword">where</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'1$'</span>);</div><div class="line"></div><div class="line"><span class="comment">--2,REGEXP_INSTR</span></div><div class="line"><span class="comment">--查找第一次出现匹配模式是index</span></div><div class="line"><span class="keyword">SELECT</span> REGEXP_INSTR(<span class="number">112233</span>,<span class="string">'233'</span>)  <span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--3,REGEXP_SUBSTR</span></div><div class="line"><span class="comment">--查找匹配的字串</span></div><div class="line"><span class="keyword">SELECT</span> REGEXP_SUBSTR(<span class="number">112233</span>,<span class="string">'[1-2]*'</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--4,REGEXP_REPLACE</span></div><div class="line"><span class="comment">--替换匹配字串的值</span></div><div class="line"><span class="keyword">SELECT</span> REGEXP_REPLACE(<span class="number">112233</span>,<span class="string">'1&#123;2&#125;'</span>,<span class="string">'aa'</span>) <span class="keyword">from</span> dual;</div></pre></td></tr></table></figure>
+<h3 id="集合操作"><a href="#集合操作" class="headerlink" title="集合操作"></a>集合操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1,合集;UNION (去重),UNION ALL(不去重)</span></div><div class="line"><span class="comment">--UNION</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'0$'</span>))</div><div class="line"><span class="keyword">UNION</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'10$'</span>))</div><div class="line">;</div><div class="line"><span class="comment">--UNION ALL</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'0$'</span>))</div><div class="line"><span class="keyword">UNION</span> ALL</div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'10$'</span>))</div><div class="line">;</div><div class="line"></div><div class="line"><span class="comment">--2,交集; INTERSECT</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'0$'</span>))</div><div class="line"><span class="keyword">INTERSECT</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'10$'</span>))</div><div class="line">;</div><div class="line"></div><div class="line"><span class="comment">--3.差集. MINUS</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'0$'</span>))</div><div class="line"><span class="keyword">MINUS</span></div><div class="line">(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT c <span class="keyword">WHERE</span> <span class="keyword">REGEXP_LIKE</span>(ACCT_NBR,<span class="string">'10$'</span>))</div><div class="line">;</div></pre></td></tr></table></figure>
+<h3 id="字符串操作"><a href="#字符串操作" class="headerlink" title="字符串操作"></a>字符串操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.字符串拼接;concat,ORACLE只能拼接两个field</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">concat</span>(<span class="string">'a'</span>,<span class="string">'b'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--2.字符串长度,length</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">length</span>(<span class="string">'aaa'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--3.字符串比较</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">case</span> <span class="keyword">when</span> <span class="string">'aa'</span>&lt;<span class="string">'ab'</span> <span class="keyword">then</span> <span class="string">'true'</span> <span class="keyword">else</span> <span class="string">'false'</span> <span class="keyword">end</span> <span class="keyword">as</span> <span class="keyword">result</span> <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--4.字符串裁剪</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">SUBSTR</span>(<span class="string">'123456789'</span>,<span class="number">1</span>,<span class="number">4</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--5.长度不足左右填充; lpad,rpad ,长度不足则填充,长度够则截取指定长度.</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">lpad</span>(<span class="string">'1234'</span>,<span class="number">10</span>,<span class="string">'*'</span>),<span class="keyword">lpad</span>(<span class="string">'1234'</span>,<span class="number">2</span>,<span class="string">'*'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--6.左右删除;LTRIM,RTRIM</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">RTRIM</span>(<span class="string">'00111333111'</span>,<span class="string">'(0|1)'</span>),<span class="keyword">LTRIM</span>(<span class="string">'00111333111'</span>,<span class="string">'(0|1)'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--7.字符串替换;REPLACE</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">REPLACE</span>(<span class="string">'123'</span>,<span class="string">'2'</span>,<span class="string">'a'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--8.查找第一次出现的位置</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">INSTR</span>(<span class="string">'abcdc'</span>, <span class="string">'c'</span>)<span class="keyword">from</span> dual;</div></pre></td></tr></table></figure>
+<h3 id="时间日期操作"><a href="#时间日期操作" class="headerlink" title="时间日期操作"></a>时间日期操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.系统时间,时间戳</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">sysdate</span>,SYSTIMESTAMP,<span class="keyword">CURRENT_DATE</span></div><div class="line"><span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--2.字符串转日期</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">TO_DATE</span>(<span class="string">'2016-12-06 20:15:30'</span>,<span class="string">'yyyy-mm-dd hh24:mi:ss'</span>),<span class="keyword">TO_DATE</span>(<span class="string">'20161206'</span>,<span class="string">'yyyy-mm-dd'</span>),<span class="keyword">cast</span>(<span class="string">'11:15:30'</span><span class="keyword">as</span> <span class="keyword">time</span>)</div><div class="line"><span class="keyword">from</span> dual</div><div class="line">;</div><div class="line"><span class="comment">--3.日期转字符串, 获取年月日,季度.</span></div><div class="line"><span class="keyword">SELECT</span> to_char(<span class="keyword">sysdate</span>,<span class="string">'yyyy-mm'</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="keyword">SELECT</span> to_char(<span class="keyword">sysdate</span>,<span class="string">'q'</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">extract</span>(<span class="keyword">YEAR</span> <span class="keyword">from</span> <span class="keyword">sysdate</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual;<span class="comment">--取出时间中的Year</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">extract</span>(<span class="keyword">MONTH</span> <span class="keyword">from</span> <span class="keyword">sysdate</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual;<span class="comment">--取出时间中的Month</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">extract</span>(<span class="keyword">DAY</span> <span class="keyword">from</span> <span class="keyword">sysdate</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual;<span class="comment">--取出时间中的Day</span></div><div class="line"><span class="comment">--4.日期增加</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,add_months(<span class="keyword">sysdate</span>,<span class="number">12</span>) <span class="keyword">from</span> dual;        <span class="comment">--加1年</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,add_months(<span class="keyword">sysdate</span>,<span class="number">1</span>) <span class="keyword">from</span> dual;        <span class="comment">--加1月</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,to_char(<span class="keyword">sysdate</span>+<span class="number">7</span>,<span class="string">'yyyy-mm-dd HH24:MI:SS'</span>) <span class="keyword">from</span> dual;   <span class="comment">--加1星期</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,to_char(<span class="keyword">sysdate</span>+<span class="number">1</span>,<span class="string">'yyyy-mm-dd HH24:MI:SS'</span>) <span class="keyword">from</span> dual;   <span class="comment">--加1天</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,to_char(<span class="keyword">sysdate</span>+<span class="number">1</span>/<span class="number">24</span>,<span class="string">'yyyy-mm-dd HH24:MI:SS'</span>) <span class="keyword">from</span> dual;  <span class="comment">--加1小时</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,to_char(<span class="keyword">sysdate</span>+<span class="number">1</span>/<span class="number">24</span>/<span class="number">60</span>,<span class="string">'yyyy-mm-dd HH24:MI:SS'</span>) <span class="keyword">from</span> dual;  <span class="comment">--加1分钟</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">sysdate</span>,to_char(<span class="keyword">sysdate</span>+<span class="number">1</span>/<span class="number">24</span>/<span class="number">60</span>/<span class="number">60</span>,<span class="string">'yyyy-mm-dd HH24:MI:SS'</span>) <span class="keyword">from</span> dual;  <span class="comment">--加1秒</span></div><div class="line"><span class="comment">--5.日期间隔</span></div><div class="line"><span class="keyword">select</span> months_between(<span class="keyword">to_date</span>(<span class="string">'2006-04-20'</span>,<span class="string">'yyyy-mm-dd'</span>),<span class="keyword">to_date</span>(<span class="string">'2005-05-20'</span>,<span class="string">'yyyy-mm-dd'</span>)) mon_betw <span class="keyword">from</span> dual; <span class="comment">--时间间隔(月)</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">ceil</span>(((<span class="keyword">to_date</span>(<span class="string">'2008-05-02 00:00'</span> , <span class="string">'yyyy-mm-dd hh24:mi:ss'</span>) - <span class="keyword">to_date</span>(<span class="string">'2008-05-01 22:58'</span> , <span class="string">'yyyy-mm-dd hh24:mi:ss'</span>))) * <span class="number">24</span> * <span class="number">60</span>) <span class="keyword">FROM</span> DUAL; <span class="comment">--间隔分钟</span></div></pre></td></tr></table></figure>
+<h3 id="CAST转换操作"><a href="#CAST转换操作" class="headerlink" title="CAST转换操作"></a>CAST转换操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.转换为Integer</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">cast</span>(<span class="string">'111'</span> <span class="keyword">as</span> <span class="built_in">int</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--2.转换为NUMBER</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">cast</span>(<span class="string">'111.333'</span> <span class="keyword">as</span>  <span class="built_in">NUMBER</span>(<span class="number">5</span>,<span class="number">2</span>)) <span class="keyword">from</span> dual;</div><div class="line"><span class="keyword">SELECT</span> to_number(<span class="string">'123'</span>) <span class="keyword">from</span> dual;</div></pre></td></tr></table></figure>
+<h3 id="分组操作"><a href="#分组操作" class="headerlink" title="分组操作"></a>分组操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--按季度分组统计</span></div><div class="line"><span class="keyword">select</span> to_CHAR(a.SETUP_DATE,<span class="string">'yyyy-q'</span>) m,<span class="keyword">count</span>(*)</div><div class="line"><span class="keyword">from</span> CCS_ACCT a</div><div class="line"><span class="keyword">where</span> <span class="number">1</span>=<span class="number">1</span></div><div class="line"><span class="keyword">group</span> <span class="keyword">by</span> to_CHAR(a.SETUP_DATE,<span class="string">'yyyy-q'</span>);</div></pre></td></tr></table></figure>
+<h3 id="ALL-ANY-EXISTS-操作符"><a href="#ALL-ANY-EXISTS-操作符" class="headerlink" title="ALL ANY EXISTS 操作符"></a>ALL ANY EXISTS 操作符</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.ALL.字段值与ALL结果集中进行比较,与每一个比较都成立,则结果为真.</span></div><div class="line"><span class="comment">--与not in 差别. 下面的例子,ALL将返回结果集,not in返回空集.</span></div><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> CCS_ACCT</div><div class="line"><span class="keyword">WHERE</span> ACCT_NBR &lt;&gt; ALL(<span class="keyword">SELECT</span> ACCT_NBR <span class="keyword">from</span> CCS_ACCT <span class="keyword">where</span> ACCT_NBR <span class="keyword">in</span> (<span class="number">1123000</span>,<span class="number">1123001</span>,<span class="literal">NULL</span>))</div><div class="line">;</div><div class="line"></div><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> CCS_ACCT</div><div class="line"><span class="keyword">WHERE</span> ACCT_NBR <span class="keyword">not</span> <span class="keyword">in</span> (<span class="number">1123000</span>,<span class="number">1123001</span>,<span class="literal">NULL</span>);</div><div class="line"><span class="comment">--2.Any,字段值与any结果集中进行比较,只要有一个成立,则结果为真.</span></div><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> CCS_ACCT</div><div class="line"><span class="keyword">WHERE</span> CURR_BAL &gt; <span class="keyword">any</span>(<span class="keyword">SELECT</span> CURR_BAL <span class="keyword">from</span> CCS_ACCT <span class="keyword">where</span> <span class="keyword">ROWNUM</span>&lt;<span class="number">5</span>)</div><div class="line"></div><div class="line"><span class="comment">--3.EXISTS</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">sysdate</span> <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="keyword">EXISTS</span>(<span class="keyword">select</span> <span class="number">1</span> <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="number">1</span>=<span class="number">1</span>);</div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">sysdate</span> <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="keyword">EXISTS</span>(<span class="keyword">select</span> <span class="number">1</span> <span class="keyword">from</span> dual <span class="keyword">where</span> <span class="number">1</span>&lt;&gt;<span class="number">1</span>);</div></pre></td></tr></table></figure>
+<h3 id="trunc、round、ceil-floor"><a href="#trunc、round、ceil-floor" class="headerlink" title="trunc、round、ceil/floor"></a>trunc、round、ceil/floor</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.trunc函数</span></div><div class="line"><span class="comment">--trunc函数处理数字 TRUNC(number[,decimals])</span></div><div class="line"><span class="keyword">select</span> trunc(<span class="number">123.89</span>,<span class="number">0</span>) <span class="keyword">from</span> dual; <span class="comment">-- 123</span></div><div class="line"><span class="keyword">select</span> trunc(<span class="number">123.123</span>,<span class="number">2</span>) <span class="keyword">from</span> dual; <span class="comment">--123.12</span></div><div class="line"><span class="keyword">select</span> trunc(<span class="number">123.123</span>,<span class="number">-1</span>) <span class="keyword">from</span> dual; <span class="comment">--120</span></div><div class="line"><span class="comment">--trunc函数处理日期 TRUNC(date,[fmt]), sysdate为2017-02-15 10:30:09</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'yyyy'</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual;  <span class="comment">--返回当年第一天. 2017-01-01 00:00:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'mm'</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual; <span class="comment">--返回当月第一天. 2017-02-01 00:00:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'d'</span>),<span class="keyword">sysdate</span> <span class="keyword">from</span> dual; <span class="comment">--返回当前星期的第一天. 2017-02-12 00:00:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'dd'</span>) <span class="keyword">from</span> dual;  <span class="comment">--截取到当天0点0分0秒,2018-08-25 00:00:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'hh24'</span>) <span class="keyword">from</span> dual;  <span class="comment">--截取到小时（当前小时，零分零秒）,2018-08-25 04:00:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'mi'</span>) <span class="keyword">from</span> dual; <span class="comment">--截取到分（当前分，零秒）2018-08-25 04:28:00</span></div><div class="line"><span class="keyword">SELECT</span> trunc(<span class="keyword">sysdate</span>,<span class="string">'ss'</span>) <span class="keyword">from</span> dual ;<span class="comment">--报错，没有精确到秒的格式</span></div><div class="line"></div><div class="line"><span class="comment">--2.round 函数</span></div><div class="line"><span class="comment">--round函数处理数字 round( number, [ decimal_places ] ), decimal_places为保留的小数位数</span></div><div class="line"><span class="comment">--传回一个数值，该数值是按照指定的小数位元数进行四舍五入运算的结果。</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="number">123.456</span>, <span class="number">0</span>) <span class="keyword">from</span> dual;     <span class="comment">--回传 123</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="number">123.456</span>, <span class="number">1</span>) <span class="keyword">from</span> dual;     <span class="comment">--回传 123.5</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="number">-123.456</span>, <span class="number">2</span>) <span class="keyword">from</span> dual;    <span class="comment">--回传 -123.46</span></div><div class="line"><span class="comment">--round函数处理日期 round(date,fmt) ,fmt为四舍五入的单位.</span></div><div class="line"><span class="comment">--月</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170215'</span>,<span class="string">'yyyymmdd'</span>),<span class="string">'mm'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-02-01</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170216'</span>,<span class="string">'yyyymmdd'</span>),<span class="string">'mm'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-03-01</span></div><div class="line"><span class="comment">--日</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:20'</span>,<span class="string">'yyyymmdd hh24:mi'</span>),<span class="string">'dd'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-02-15 00:00:00</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 12:20'</span>,<span class="string">'yyyymmdd hh24:mi'</span>),<span class="string">'dd'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-02-16 00:00:00</span></div><div class="line"><span class="comment">--小时</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:20'</span>,<span class="string">'yyyymmdd hh24:mi'</span>),<span class="string">'hh'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-02-15 11:00:00</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">round</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:30'</span>,<span class="string">'yyyymmdd hh24:mi'</span>),<span class="string">'hh'</span>) <span class="keyword">from</span> dual;    <span class="comment">-- 2017-02-15 12:00:00</span></div><div class="line"></div><div class="line"><span class="comment">--3.ceil/floor 函数</span></div><div class="line"><span class="comment">--处理数字</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">ceil</span>(<span class="number">123.456</span>) <span class="keyword">from</span> dual;     <span class="comment">--回传 124</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">floor</span>(<span class="number">123.456</span>) <span class="keyword">from</span> dual;     <span class="comment">--回传 123</span></div><div class="line"><span class="comment">--处理日期</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">ceil</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:00'</span>,<span class="string">'yyyymmdd hh24:mi'</span>) - <span class="keyword">to_date</span>(<span class="string">'20170214 11:00'</span>,<span class="string">'yyyymmdd hh24:mi'</span>)) <span class="keyword">from</span> dual; <span class="comment">-- return 1</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">ceil</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:00'</span>,<span class="string">'yyyymmdd hh24:mi'</span>) - <span class="keyword">to_date</span>(<span class="string">'20170214 10:59'</span>,<span class="string">'yyyymmdd hh24:mi'</span>)) <span class="keyword">from</span> dual; <span class="comment">-- return 2</span></div><div class="line"><span class="keyword">select</span> <span class="keyword">floor</span>(<span class="keyword">to_date</span>(<span class="string">'20170215 11:00'</span>,<span class="string">'yyyymmdd hh24:mi'</span>) - <span class="keyword">to_date</span>(<span class="string">'20170214 10:59'</span>,<span class="string">'yyyymmdd hh24:mi'</span>)) <span class="keyword">from</span> dual; <span class="comment">-- return 1</span></div></pre></td></tr></table></figure>
+<h3 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--1.NVL NVL2 NULLIF</span></div><div class="line"><span class="comment">--NVL(e1,e2), 相当于 e1 != NULL ? e1 : e2</span></div><div class="line"><span class="keyword">SELECT</span> NVL(<span class="literal">NULL</span>,<span class="string">'0'</span>), NVL(<span class="string">'123'</span>,<span class="string">'1'</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--NVL(field,e1,e2) 相当于 field != NULL ? e1:e2</span></div><div class="line"><span class="keyword">SELECT</span> NVL2(<span class="literal">NULL</span>,<span class="string">'not-null'</span>,<span class="string">'null'</span>),NVL2(<span class="string">'a'</span>,<span class="string">'not-null'</span>,<span class="string">'null'</span>) <span class="keyword">from</span> dual;</div><div class="line"><span class="comment">--NULLIF(e1,e2), 相当于 e1==e2 ? NULL : e1</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">NULLIF</span>(<span class="string">'a'</span>,<span class="string">'a'</span>),<span class="keyword">NULLIF</span>(<span class="string">'a'</span>,<span class="string">'b'</span>),<span class="keyword">NULLIF</span>(<span class="string">'b'</span>,<span class="string">'a'</span>) <span class="keyword">from</span> dual;</div><div class="line"></div><div class="line"><span class="comment">--2. (+)的使用,哪边有（+）哪边就允许为空</span></div><div class="line"><span class="keyword">SELECT</span> a.*, b.* <span class="keyword">from</span> a,b <span class="keyword">where</span> a.ID(+) = b.ID ; <span class="comment">--就是一个右连接，等同于select a.*, b.* from a right join b on a.ID=b.ID</span></div><div class="line"><span class="keyword">SELECT</span> a.*, b.* <span class="keyword">from</span> a,b <span class="keyword">where</span> a.ID = b.ID (+);  <span class="comment">--就是一个左连接，等同于select a.*, b.* from a left join b on a.ID=b.ID</span></div><div class="line"></div><div class="line"><span class="comment">--3. decode</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">decode</span>(<span class="string">'a'</span>,<span class="string">'a'</span>,<span class="number">96</span>,<span class="string">'b'</span>,<span class="number">97</span>) <span class="keyword">from</span> dual; <span class="comment">-- 96</span></div><div class="line"><span class="keyword">SELECT</span> <span class="keyword">decode</span>(<span class="string">'b'</span>,<span class="string">'a'</span>,<span class="number">96</span>,<span class="string">'b'</span>,<span class="number">97</span>) <span class="keyword">from</span> dual; <span class="comment">-- 97</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div></div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/reward/wx_pay.png" alt="Terry Shi WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SQL/" rel="tag"># SQL</a>
+          
+            <a href="/tags/ORACLE/" rel="tag"># ORACLE</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/06/nice-software/" rel="next" title="善用佳软">
+                <i class="fa fa-chevron-left"></i> 善用佳软
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/09/effective-java-read-note/" rel="prev" title="Effective java 读书笔记">
+                Effective java 读书笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/08/learn-oracle/"
+     data-title="SQL基础-ORACLE"
+     data-content=""
+     data-url="http://yoursite.com/2017/02/08/learn-oracle/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/08/learn-oracle/"
+           data-title="SQL基础-ORACLE" data-url="http://yoursite.com/2017/02/08/learn-oracle/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/me/onepiece.jpg"
+               alt="Terry Shi" />
+          <p class="site-author-name" itemprop="name">Terry Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友链
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://jadyer.github.io/" title="玄玉" target="_blank">玄玉</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://binaryys.github.io/" title="松松哥" target="_blank">松松哥</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://calvin1978.blogcn.com/" title="Calvin" target="_blank">Calvin</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#正则表达式"><span class="nav-number">1.</span> <span class="nav-text">正则表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合操作"><span class="nav-number">2.</span> <span class="nav-text">集合操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串操作"><span class="nav-number">3.</span> <span class="nav-text">字符串操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间日期操作"><span class="nav-number">4.</span> <span class="nav-text">时间日期操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CAST转换操作"><span class="nav-number">5.</span> <span class="nav-text">CAST转换操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分组操作"><span class="nav-number">6.</span> <span class="nav-text">分组操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ALL-ANY-EXISTS-操作符"><span class="nav-number">7.</span> <span class="nav-text">ALL ANY EXISTS 操作符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#trunc、round、ceil-floor"><span class="nav-number">8.</span> <span class="nav-text">trunc、round、ceil/floor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用函数"><span class="nav-number">9.</span> <span class="nav-text">常用函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Terry Shi</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"shitianquan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

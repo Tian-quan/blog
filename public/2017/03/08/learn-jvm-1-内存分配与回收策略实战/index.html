@@ -1,0 +1,867 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,jvm," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="参考资料
+Java Garbage Collection Basics
+JVM参数释义
+
+Debug环境笔者是在IDEA + jvm调试工具环境下调试.
+
+虚拟机启动参数配置
+123456-XX：+PrintGCDetails  --虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。-Xms20M  --初始堆大小-Xmx20M  --最大堆大小-Xmn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="learn-jvm-1-内存分配与回收策略实战">
+<meta property="og:url" content="http://yoursite.com/2017/03/08/learn-jvm-1-内存分配与回收策略实战/index.html">
+<meta property="og:site_name" content="Terry">
+<meta property="og:description" content="参考资料
+Java Garbage Collection Basics
+JVM参数释义
+
+Debug环境笔者是在IDEA + jvm调试工具环境下调试.
+
+虚拟机启动参数配置
+123456-XX：+PrintGCDetails  --虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。-Xms20M  --初始堆大小-Xmx20M  --最大堆大小-Xmn">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/firstYGC.png">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/allocateToOldGeneration.png">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/ageToOldGenerationMemory.png">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/ageToOldGenerationHeap.png">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/maxTenuringThreshold.png">
+<meta property="og:image" content="http://yoursite.com/img/learn-jvm-1/allocateToOld.png">
+<meta property="og:updated_time" content="2017-04-23T09:54:13.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="learn-jvm-1-内存分配与回收策略实战">
+<meta name="twitter:description" content="参考资料
+Java Garbage Collection Basics
+JVM参数释义
+
+Debug环境笔者是在IDEA + jvm调试工具环境下调试.
+
+虚拟机启动参数配置
+123456-XX：+PrintGCDetails  --虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。-Xms20M  --初始堆大小-Xmx20M  --最大堆大小-Xmn">
+<meta name="twitter:image" content="http://yoursite.com/img/learn-jvm-1/firstYGC.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/08/learn-jvm-1-内存分配与回收策略实战/"/>
+
+
+
+
+
+  <title>learn-jvm-1-内存分配与回收策略实战 | Terry</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Terry</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/08/learn-jvm-1-内存分配与回收策略实战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Terry Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/me/onepiece.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Terry">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                learn-jvm-1-内存分配与回收策略实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-08T13:21:49+08:00">
+                2017-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/08/learn-jvm-1-内存分配与回收策略实战/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/08/learn-jvm-1-内存分配与回收策略实战/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html#t3" target="_blank" rel="external">Java Garbage Collection Basics</a></li>
+<li><a href="http://www.cnblogs.com/redcreen/archive/2011/05/04/2037057.html" target="_blank" rel="external">JVM参数释义</a></li>
+</ul>
+<h1 id="Debug环境"><a href="#Debug环境" class="headerlink" title="Debug环境"></a>Debug环境</h1><p>笔者是在IDEA + jvm调试工具环境下调试.</p>
+<ul>
+<li><p>虚拟机启动参数配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">-XX：+PrintGCDetails  --虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。</div><div class="line">-Xms20M  --初始堆大小</div><div class="line">-Xmx20M  --最大堆大小</div><div class="line">-Xmn10M  --年轻代大小</div><div class="line">-XX:+UseSerialGC --指定垃圾回收器为串行垃圾回收器</div><div class="line">-XX:PretenureSizeThreshold=3145728  --超过阀值(3MB)直接分配到老年代,只对Serial和ParNew两款收集器有效</div></pre></td></tr></table></figure>
+</li>
+<li><p>常用调试命令</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">查看虚拟机唯一ID(Local Virtual Machine Identifier,LVMID),通常情况下与进程ID是一个值</div><div class="line">&gt; jps</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">查看堆栈信息</div><div class="line">&gt; jmap</div><div class="line">&gt; jmap -heap $LVMID  //查看堆内存</div><div class="line">&gt; jmap -dump:format=b,file=xx.bin  $LVMID  //生成dump文件, 可用jhat命令分析生成的内存镜像文件</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">查看堆栈内存变化信息</div><div class="line">&gt; jstat</div><div class="line">&gt; jstat -gcutil -h 20 $LVMID 500 1000     // (每隔20行显示表头,每隔500ms显示一次,一共显示1000次)</div><div class="line">option 可选</div><div class="line">    -gcnew</div><div class="line">    -gcnewcapacity</div><div class="line">    -gcold</div><div class="line">    -gcoldcapacity</div><div class="line">    -gcpermcapacity</div><div class="line">    -gcutil</div><div class="line">表头含义(https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html)</div><div class="line">-gcutil option</div><div class="line">Summary of garbage collection statistics.</div><div class="line">S0: Survivor space 0 utilization as a percentage of the space&apos;s current capacity.</div><div class="line">S1: Survivor space 1 utilization as a percentage of the space&apos;s current capacity.</div><div class="line">E: Eden space utilization as a percentage of the space&apos;s current capacity.</div><div class="line">O: Old space utilization as a percentage of the space&apos;s current capacity.</div><div class="line">M: Metaspace utilization as a percentage of the space&apos;s current capacity.</div><div class="line">CCS: Compressed class space utilization as a percentage.</div><div class="line">YGC: Number of young generation GC events.</div><div class="line">YGCT: Young generation garbage collection time.</div><div class="line">FGC: Number of full GC events.</div><div class="line">FGCT: Full garbage collection time.</div><div class="line">GCT: Total garbage collection time.</div></pre></td></tr></table></figure>
+<h1 id="内存分配与回收策略"><a href="#内存分配与回收策略" class="headerlink" title="内存分配与回收策略"></a>内存分配与回收策略</h1><h2 id="对象优先在Eden分配"><a href="#对象优先在Eden分配" class="headerlink" title="对象优先在Eden分配"></a>对象优先在Eden分配</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAllocation</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 测试垃圾回收</div><div class="line">     * jvm添加参数:-Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails</div><div class="line">     * -Xms20M  --初始堆大小</div><div class="line">     * -Xmx20M  --最大堆大小</div><div class="line">     * -Xmn10M  --年轻代大小</div><div class="line">     * 这3个参数限制了Java堆大小为20MB,不可扩展,其中10MB分配给新生代,剩下的10MB分配给老年代。</div><div class="line">     * -XX:SurvivorRatio=8  决定了新生代中Eden区与一个Survivor区的空间比例是8:1</div><div class="line">     * -XX:+PrintGCDetails  告诉虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test_3_6_1</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">byte</span>[] a1 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a3 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a4 = <span class="keyword">new</span> <span class="keyword">byte</span>[_1MB &gt;&gt; <span class="number">1</span>];</div><div class="line">        a1 = <span class="keyword">null</span>;</div><div class="line">        a2 = <span class="keyword">null</span>;</div><div class="line">        a3 = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">byte</span>[] a5 = <span class="keyword">new</span> <span class="keyword">byte</span>[_1MB &gt;&gt; <span class="number">2</span>];<span class="comment">//第一次发生Minor GC (YGC)</span></div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        test_3_6_1();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调试到第一次发生YGC的地方,GC导致的内存占用变化如下图所示.<br><img src="/img/learn-jvm-1/firstYGC.png" alt="YGC"></p>
+<h2 id="直接分配大对象到老年代"><a href="#直接分配大对象到老年代" class="headerlink" title="直接分配大对象到老年代"></a>直接分配大对象到老年代</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test_3_6_2</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 测试直接分配大对象到老年代</div><div class="line">     * jvm添加参数:-Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:+UseSerialGC -XX:PretenureSizeThreshold=3145728</div><div class="line">     * -Xms20M  --初始堆大小</div><div class="line">     * -Xmx20M  --最大堆大小</div><div class="line">     * -Xmn10M  --年轻代大小</div><div class="line">     * -XX:+UseSerialGC --指定垃圾回收器为串行垃圾回收器</div><div class="line">     * -XX:PretenureSizeThreshold=3145728  --超过阀值(3MB)直接分配到老年代,只对Serial和ParNew两款收集器有效</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test_3_6_2</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>* _1MB]; <span class="comment">//直接分配到老年代</span></div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        test_3_6_2();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>内存占用变化如下图所示.<br><img src="/img/learn-jvm-1/allocateToOldGeneration.png" alt="YGC"></p>
+<h2 id="长期存活的对象进入老年代"><a href="#长期存活的对象进入老年代" class="headerlink" title="长期存活的对象进入老年代"></a>长期存活的对象进入老年代</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test_3_6_3</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 测试长期存活的对象进入老年代</div><div class="line">     * jvm添加参数:-Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:MaxTenuringThreshold=1 -XX:+PrintTenuringDistribution</div><div class="line">     * -Xms20M  --初始堆大小</div><div class="line">     * -Xmx20M  --最大堆大小</div><div class="line">     * -Xmn10M  --年轻代大小</div><div class="line">     * -XX:MaxTenuringThreshold=1 -- 对象转移到老年代阀值(每次垃圾回收对象age+1,age大于阀值时对象被移到老年代中)</div><div class="line">     * -XX:+PrintTenuringDistribution</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test_3_6_3</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">byte</span>[] a1 = <span class="keyword">new</span> <span class="keyword">byte</span>[_1MB &gt;&gt; <span class="number">2</span>];</div><div class="line">        <span class="keyword">byte</span>[] a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a3 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a4 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        a2 = <span class="keyword">null</span>;</div><div class="line">        a3 = <span class="keyword">null</span>;</div><div class="line">        a4 = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];<span class="comment">//第1次YGC</span></div><div class="line">        a3 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        a4 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];</div><div class="line">        a2 = <span class="keyword">null</span>;</div><div class="line">        a3 = <span class="keyword">null</span>;</div><div class="line">        a4 = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];<span class="comment">//第2次YGC,a1被移到老年代</span></div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        test_3_6_3();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>内存占用变化如下图所示.<br><img src="/img/learn-jvm-1/ageToOldGenerationMemory.png" alt="ageToOld"></p>
+<p>第2次YDC后堆内存信息<br><img src="/img/learn-jvm-1/ageToOldGenerationHeap.png" alt="ageToOld"></p>
+<h2 id="动态对象年龄判定"><a href="#动态对象年龄判定" class="headerlink" title="动态对象年龄判定"></a>动态对象年龄判定</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test_3_6_4</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 测试动态对象年龄判定</div><div class="line">     *</div><div class="line">     * 为了能更好地适应不同程序的内存状况，</div><div class="line">     * 虚拟机并不是永远地要求对象的年龄必须达到了MaxTenuringThreshold才能晋升老年代，</div><div class="line">     * 如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，</div><div class="line">     * 年龄大于或等于该年龄的对象就可以直接进入老年代，</div><div class="line">     * 无须等到MaxTenuringThreshold中要求的年龄。</div><div class="line">     *</div><div class="line">     * jvm添加参数:-Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:MaxTenuringThreshold=15 -XX:+PrintTenuringDistribution</div><div class="line">     * -Xms20M  --初始堆大小</div><div class="line">     * -Xmx20M  --最大堆大小</div><div class="line">     * -Xmn10M  --年轻代大小</div><div class="line">     * -XX:MaxTenuringThreshold=1 -- 对象转移到老年代阀值(每次垃圾回收对象age+1,age大于阀值时对象被移到老年代中)</div><div class="line">     * -XX:+PrintTenuringDistribution</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test_3_6_4</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">byte</span>[] a1 = <span class="keyword">new</span> <span class="keyword">byte</span>[_1MB &gt;&gt; <span class="number">2</span>];</div><div class="line">        <span class="keyword">byte</span>[] a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[_1MB &gt;&gt; <span class="number">2</span>];<span class="comment">//a1+a2大于survivo空间一半</span></div><div class="line">        <span class="keyword">byte</span>[] a3 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">3</span> * _1MB];</div><div class="line">        <span class="keyword">byte</span>[] a4 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">3</span> * _1MB];</div><div class="line">        a4 = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">byte</span>[] a5 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span> * _1MB];<span class="comment">//此时发生YGC, a1+a2 --&gt; S0, a3 --&gt; old</span></div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        test_3_6_4();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>内存占用变化如下图所示.<br><img src="/img/learn-jvm-1/maxTenuringThreshold.png" alt="ageToOld"></p>
+<h2 id="空间分配担保"><a href="#空间分配担保" class="headerlink" title="空间分配担保"></a>空间分配担保</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test_3_6_5</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 测试空间分配担保</div><div class="line">     *</div><div class="line">     * 当出现大量对象在Minor GC后仍然存活的情况（最极端的情况就是内存回收后新生代中所有对象都存活），</div><div class="line">     * 就需要老年代进行分配担保，把Survivor无法容纳的对象直接进入老年代.</div><div class="line">     *</div><div class="line">     * jvm添加参数:-Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails</div><div class="line">     * -Xms20M  --初始堆大小</div><div class="line">     * -Xmx20M  --最大堆大小</div><div class="line">     * -Xmn10M  --年轻代大小</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test_3_6_5</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">byte</span>[] a1 = <span class="keyword">new</span> <span class="keyword">byte</span>[ <span class="number">4</span> * _1MB ];</div><div class="line">        <span class="keyword">byte</span>[] a2 = <span class="keyword">new</span> <span class="keyword">byte</span>[ <span class="number">4</span> * _1MB ];</div><div class="line">        <span class="keyword">byte</span>[] a3 = <span class="keyword">new</span> <span class="keyword">byte</span>[ <span class="number">3</span> * _1MB];<span class="comment">//没有GC, 直接在老年代分配空间给a3</span></div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        test_3_6_5();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>内存占用变化如下图所示.<br><img src="/img/learn-jvm-1/allocateToOld.png" alt="ageToOld"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div></div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/img/reward/wx_pay.png" alt="Terry Shi WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/08/learn-jvm-0-运行时数据区域/" rel="next" title="learn-jvm-0-运行时数据区域">
+                <i class="fa fa-chevron-left"></i> learn-jvm-0-运行时数据区域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/11/learn-jvm-2-BTrace初探/" rel="prev" title="learn-jvm-2-BTrace初探">
+                learn-jvm-2-BTrace初探 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/03/08/learn-jvm-1-内存分配与回收策略实战/"
+     data-title="learn-jvm-1-内存分配与回收策略实战"
+     data-content=""
+     data-url="http://yoursite.com/2017/03/08/learn-jvm-1-内存分配与回收策略实战/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/08/learn-jvm-1-内存分配与回收策略实战/"
+           data-title="learn-jvm-1-内存分配与回收策略实战" data-url="http://yoursite.com/2017/03/08/learn-jvm-1-内存分配与回收策略实战/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/img/me/onepiece.jpg"
+               alt="Terry Shi" />
+          <p class="site-author-name" itemprop="name">Terry Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友链
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://jadyer.github.io/" title="玄玉" target="_blank">玄玉</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://binaryys.github.io/" title="松松哥" target="_blank">松松哥</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://calvin1978.blogcn.com/" title="Calvin" target="_blank">Calvin</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Debug环境"><span class="nav-number">2.</span> <span class="nav-text">Debug环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存分配与回收策略"><span class="nav-number">3.</span> <span class="nav-text">内存分配与回收策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对象优先在Eden分配"><span class="nav-number">3.1.</span> <span class="nav-text">对象优先在Eden分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#直接分配大对象到老年代"><span class="nav-number">3.2.</span> <span class="nav-text">直接分配大对象到老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#长期存活的对象进入老年代"><span class="nav-number">3.3.</span> <span class="nav-text">长期存活的对象进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态对象年龄判定"><span class="nav-number">3.4.</span> <span class="nav-text">动态对象年龄判定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#空间分配担保"><span class="nav-number">3.5.</span> <span class="nav-text">空间分配担保</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Terry Shi</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"shitianquan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
