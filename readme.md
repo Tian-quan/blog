@@ -9,6 +9,9 @@ http://theme-next.iissnan.com/getting-started.html
 //cd 到blog目录, 初始化git
 $ npm install hexo-deployer-git --save
 
+// 安装 搜索插件
+$npm install hexo-generator-searchdb --save
+
 //根据_config.yml配置,上传到github
 $ hexo d
 
