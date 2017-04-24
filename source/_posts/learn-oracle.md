@@ -4,6 +4,11 @@ date: 2017-02-08 16:50:35
 tags: [SQL,ORACLE]
 categories: SQL
 ---
+### 元数据查询
+```SQL
+--1.查看表字段名
+SELECT * FROM all_tab_columns where TABLE_name='CCS_LOAN';
+```
 
 ### 正则表达式
 ```SQL
