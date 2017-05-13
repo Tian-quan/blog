@@ -84,9 +84,9 @@ deploy:
     github: git@github.com:shitianquan/shitianquan.github.io.git
 
 # 多说
-duoshuo_shortname: shitianquan #评论
+#duoshuo_shortname: shitianquan #评论
 #duoshuo_hotartical: true #热评文章 true 或者 false
-duoshuo_share: true #分享服务
+#duoshuo_share: true #分享服务
 
 # 微搜索
 ## 首先安装 hexo-generator-searchdb，在站点的根目录下执行以下命令：npm install hexo-generator-searchdb --save
