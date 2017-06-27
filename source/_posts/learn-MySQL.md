@@ -140,6 +140,27 @@ SELECT 'bb' as col
 where t.col REGEXP '^a'
 ;
 ```
+# 元数据访问
+```SQL
+-- 当前库
+-- 1.TABLE
+SHOW TABLES;
+SHOW TABLES FROM $库名;
+show create table $表名;	-- 创建表的语句
+
+
+-- 2.COLUMNS
+SHOW COLUMNS FROM $表名;
+DESCRIBE $表名;
+DESC $表名;
+
+-- 3.索引
+SHOW KEYS FROM $表名;
+SHOW INDEX FROM $表名;
+
+-- information_schema 库
+SELECT * FROM COLUMNS;
+```
 
 # 常用函数
 ```SQL

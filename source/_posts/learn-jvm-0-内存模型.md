@@ -1,5 +1,5 @@
 ---
-title: learn-jvm-0-运行时数据区域
+title: learn-jvm-0-内存模型
 date: 2017-03-08 10:39:55
 tags: [Java,jvm]
 categories: Java
